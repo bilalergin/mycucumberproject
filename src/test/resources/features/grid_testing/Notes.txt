@@ -1,0 +1,145 @@
+INSTALLATION:
+
+LINK: https://www.selenium.dev/documentation/grid/getting_started/
+
+1. Create a folder on desktop and name it as SeleniumServer
+
+2. Download Selenium Server: https://www.selenium.dev/downloads/
+   Download Chrome Driver: https://chromedriver.chromium.org/downloads
+   Download Firefox Driver: https://github.com/mozilla/geckodriver/releases
+   Move all of them to SeleniumServer folder and unzip them.
+
+3. Open your Command Prompt or Terminal and change the directory to
+   SeleniumServer folder
+
+4. Run the server
+   java -jar selenium-server-4.3.0.jar standalone
+    http://192.168.1.103:4444 => this link will show us the grid details
+
+5. Create a feature file and name it as grid.feature
+   @grid_feature
+   Feature: grid_feature
+     @grid_chrome
+     Scenario: TC01_running_on_chrome
+       Given user is on the application_URL with chrome
+       And verify the title of the page is "Blue Rental Cars | Cheap, Hygienic, VIP Car Hire"
+       Then close the remote driver
+     @grid_firefox
+     Scenario: TC02_running_on_firefox
+       Given user is on the application_URL with firefox
+       And verify the title of the page is "Blue Rental Cars | Cheap, Hygienic, VIP Car Hire"
+       Then close the remote driver
+
+
+
+6. Create the GridRunner
+  package runners;
+  import io.cucumber.junit.Cucumber;
+  import io.cucumber.junit.CucumberOptions;
+  import org.junit.runner.RunWith;
+  @RunWith(Cucumber.class)
+  @CucumberOptions(
+          plugin = {
+  //                "pretty",
+                  "html:target/default_cucumber_report.html",
+                  "json:target/json-reports/cucumber.json",
+                  "junit:target/xml-report/cucumber.xml",
+                  "rerun:target/failedRerun.txt",
+  //                "com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter:",
+          },
+          features = "./src/test/resources/features",//path od features folder
+          glue = {"stepdefinitions"},//path of the step definitions folder
+          tags = "@grid_firefox",
+          dryRun = false
+  )
+
+  public class GridRunner {
+  }
+
+
+
+7. Create the GridStepDefs
+package stepdefinitions;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import io.github.bonigarcia.wdm.WebDriverManager;
+import org.junit.Assert;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.firefox.FirefoxOptions;
+import org.openqa.selenium.remote.RemoteWebDriver;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.time.Duration;
+
+public class GridStepDefs {
+    WebDriver driver;
+
+    @Given("user is on the application_URL with chrome")
+    public void user_is_on_the_application_url_with_chrome() throws MalformedURLException {
+//        WebDriverManager.chromedriver().setup();
+//        driver = new ChromeDriver();
+        driver = new RemoteWebDriver(new URL("http://192.168.0.51:4444"), new ChromeOptions());
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
+        driver.manage().window().maximize();
+        driver.get("https://www.bluerentalcars.com/");
+    }
+
+    @Given("verify the title of the page is {string}")
+    public void verify_the_title_of_the_page_is(String title) throws InterruptedException {
+        Thread.sleep(5000);
+        String actualTitle = driver.getTitle();
+        String expectedTitle = title;
+        Assert.assertEquals(expectedTitle,actualTitle);
+    }
+    @Given("user is on the application_URL with firefox")
+    public void user_is_on_the_application_url_with_firefox() throws MalformedURLException {
+        driver = new RemoteWebDriver(new URL("http://192.168.0.51:4444"),new FirefoxOptions());
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
+        driver.manage().window().maximize();
+        driver.get("https://www.bluerentalcars.com/");
+    }
+    @Then("close the remote driver")
+    public void close_the_remote_driver() {
+      driver.quit();
+    }
+}
+
+***********************************************************************
+***** What is Selenium Grid?
+      Selenium Grid is a tool to run tests
+      ****on RemoteWebDriver
+      *** in parallel
+      *** cross-platform testing
+      *** on different operating systems
+
+
+**** How can we set up Selenium Grid?
+     -Download Selenium Server- and download drivers we have used chrome and firefox drivers
+     -Be sure about server and drivers are in the same folder
+     -By using CMD or Terminal we have changed the directory to SeleniumServer folder and we have used standalone mode:
+     java -jar selenium-server-4.3.0.jar standalone
+     - feature file and step defs
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

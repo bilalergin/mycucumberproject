@@ -1,0 +1,26 @@
+JDBC :
+Note: Just for JDBC Automation, we use GMI Bank Database.
+      Please do not add this project to your resumes.
+1. Our database is PostGreSQL. So we will add postGreSQL
+<!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
+<dependency>
+    <groupId>org.postgresql</groupId>
+    <artifactId>postgresql</artifactId>
+    <version>42.4.0</version>
+</dependency>
+2. In utilities, create a new class as DBUtils and add the class here.
+3. Create a folder database_testing. And Create a feature file: jdbc_read.feature
+4. Write the feature file to read database data
+    Given user connects to the database  // connect to database
+    And user gets "*" from "tp_customer" table  // go to the customer table
+    And user reads all the "ssn" column data // read the customer ssn of customers
+    Then close the database connection // close teh database connection
+
+
+5. Create step definitions
+   DBUtils.createConnection();      ===>> To connect to database using DBUtils class
+   DBUtils.executeQuery(query);     ===>> To execute the SQL query to go to table using DBUtils
+   DBUtils.getResultset().next();   ===>> To go to the next rows
+   DBUtils.getResultset().getObject(column); ====>> accepts the column name and returns us the value
+   DBUtils.closeConnection();       ====>> to close the database connection
+
